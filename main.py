@@ -117,11 +117,9 @@ def start():
   
   print(" // 로그인 진행")      
   driver = chromeStart()
-  print(" // 로그인 진행")
   #
   # 접속
   #
-
   with open("./data/account.txt", "r+") as account_file:
       account = account_file.readlines()
       account_file.seek(0)  # 파일 포인터 위치를 파일의 처음으로 이동
@@ -169,13 +167,69 @@ def start():
       driver.get(goodUrl)
       WebDriverWait(driver, 1).until(EC.alert_is_present())
       alert = driver.switch_to.alert
-      print("Alert Text:", alert.text)
       alert.accept()
       time.sleep(3)
     except Exception as e:
-      print(id + " // 정상 접속")
+      while 1:
+        try : 
+          element = driver.find_element(By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')
+          if (element):
+          #로그인되어있음
+            print(id + " // 정상 접속")
+            break
+        except Exception:
+          print()
+        time.sleep(1)
+      
   
   
+    #컬러
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option0"]/a')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="op_0_0"]')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[4]/a[1]')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    #사이즈
+    
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option1"]/a')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    if(size != ''):
+      try:
+        buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//label[text()=\''+size+'\']')))
+        driver.execute_script("arguments[0].click();", buy_button)
+      except:
+        # 텍스트가 없는 경우 랜덤하게 요소 선택 후 클릭
+        elements = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//label')))
+        if elements:
+          random_element = random.choice(elements)
+          random_element.click()  
+    else:
+      # 텍스트가 없는 경우 랜덤하게 요소 선택 후 클릭
+      elements = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//label')))
+      if elements:
+        random_element = random.choice(elements)
+        random_element.click()
+    
+    #확인
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    #일반결제
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="generalPaymentsRadio"]')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    #나중에결제
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="pay3"]')))
+    driver.execute_script("arguments[0].click();", buy_button)
+    
+    #무통장입금
+    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[3]/div/ul/li[3]')))
+    driver.execute_script("arguments[0].click();", buy_button)
     
     
   try:
