@@ -23,16 +23,6 @@ import time
 from datetime import datetime, timedelta
 import pyperclip
 
-def is_within_last_week(date_string):
-    # Convert the input date string to a datetime object
-    input_date = datetime.strptime(date_string, "%Y-%m-%d")
-    # Get the current date
-    current_date = datetime.now()
-    # Calculate the date one week ago from the current date
-    one_week_ago = current_date + timedelta(weeks=4)
-    # Check if the input date is within the last week
-    return current_date <= input_date <= one_week_ago
-
 def chromeStart():
     try:
         # 크롬드라이버 옵션 설정
@@ -167,56 +157,47 @@ def start():
   
   goodUrl = "https://m.pay.naver.com/o/products/510440774/" + goodUrl + "/purchase?from=https://m.pay.naver.com/"
   print(id + " // 상품 페이지 이동")
-  while 1:
+  while True:
     try:
       driver.get(goodUrl)
-      WebDriverWait(driver, 1).until(EC.alert_is_present())
+      WebDriverWait(driver, 3).until(EC.alert_is_present())
       alert = driver.switch_to.alert
       alert.accept()
-      time.sleep(3)
-    except Exception as e:
-      while 1:
-        try : 
-          element = driver.find_element(By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')
-          if (element):
-          #로그인되어있음
-            print(id + " // 정상 접속")
-            break
-        except Exception:
-          print()
-        time.sleep(1)
+      time.sleep(2)
+    except :
+      break
       
+  while 1:
+    try :
+      driver.get(goodUrl)
+      element = driver.find_element(By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')
+      if (element):
+        print(id + " // 정상 접속")
+        break
+    except Exception:
+      time.sleep(2)
+  
+  #컬러
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option0"]/a')))
+  driver.execute_script("arguments[0].click();", buy_button)
+  
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="op_0_0"]')))
+  driver.execute_script("arguments[0].click();", buy_button)
+  
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[4]/a[1]')))
+  driver.execute_script("arguments[0].click();", buy_button)
+  
+  #사이즈
+  
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option1"]/a')))
+  driver.execute_script("arguments[0].click();", buy_button)
   
   
-    #컬러
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option0"]/a')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="op_0_0"]')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[4]/a[1]')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    #사이즈
-    
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="option1"]/a')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    
-    if(size != ''):
-      try:
-        label = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "'+size+'")]')))
-        driver.execute_script("arguments[0].click();", label)
-      except:
-        labels = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//label')))
-        labels_with_numbers = [label for label in labels if any(num in label.text for num in extract_numbers(label.text))]
-        labels_with_numbers.pop()
-        if labels_with_numbers:
-          # 랜덤하게 라벨 선택
-          selected_label = random.choice(labels_with_numbers)  
-          driver.execute_script("arguments[0].click();", selected_label)
-    else:
+  if(size != ''):
+    try:
+      label = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//label[contains(text(), "'+size+'")]')))
+      driver.execute_script("arguments[0].click();", label)
+    except:
       labels = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//label')))
       labels_with_numbers = [label for label in labels if any(num in label.text for num in extract_numbers(label.text))]
       labels_with_numbers.pop()
@@ -224,66 +205,70 @@ def start():
         # 랜덤하게 라벨 선택
         selected_label = random.choice(labels_with_numbers)  
         driver.execute_script("arguments[0].click();", selected_label)
-        
-        
-        # 라벨 클릭
-      # # 텍스트가 없는 경우 랜덤하게 요소 선택 후 클릭
-      # elements = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//label')))
-      # if elements:
-      #   random_element = random.choice(elements)
-      #   random_element.click()
-    
-    #확인
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[4]/a[1]')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    #확인
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    while 1:
-      try : 
-        element = driver.find_element(By.XPATH, '//*[@id="orderForm"]/div/div[7]/button')
-        if (element):
-          #로그인되어있음
-          print(id + " // 결제 창 진입")
-          break
-      except Exception:
+  else:
+    labels = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//label')))
+    labels_with_numbers = [label for label in labels if any(num in label.text for num in extract_numbers(label.text))]
+    labels_with_numbers.pop()
+    if labels_with_numbers:
+      # 랜덤하게 라벨 선택
+      selected_label = random.choice(labels_with_numbers)  
+      driver.execute_script("arguments[0].click();", selected_label)
+      
+      
+      # 라벨 클릭
+    # # 텍스트가 없는 경우 랜덤하게 요소 선택 후 클릭
+    # elements = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//label')))
+    # if elements:
+    #   random_element = random.choice(elements)
+    #   random_element.click()
+  
+  #확인
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[4]/a[1]')))
+  driver.execute_script("arguments[0].click();", buy_button)
+  
+  #확인
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="ct"]/div[3]/ul/li[1]/a')))
+  driver.execute_script("arguments[0].click();", buy_button)
+  
+  while 1:
+    try : 
+      element = driver.find_element(By.XPATH, '//*[@id="orderForm"]/div/div[7]/button')
+      if (element):
+        #로그인되어있음
+        print(id + " // 결제 창 진입")
+        break
+    except Exception:
         time.sleep(1)
 
-    #일반결제
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="chargePointScrollArea"]/div[1]/ul[1]/li[4]/div[1]/span[1]/span')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    #나중에결제
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="chargePointScrollArea"]/div[1]/ul[1]/li[4]/ul/li[4]/span[1]/span')))
-    driver.execute_script("arguments[0].click();", buy_button)
-    
-    
-    
-    option_dropdown = driver.find_element(By.XPATH, '//*[@id="skipPaymentMethodSelectBox"]/select')
-    # '옵션 선택'을 제외한 옵션들을 찾아서 리스트에 저장
-    available_options = option_dropdown.find_elements(By.XPATH, "./option[contains(text(), '나중에 카드')]")
-    driver.execute_script("arguments[0].click();", available_options)
-      
-    # #결제구분
-    # buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="skipPaymentMethodSelectBox"]/div/div')))
-    # driver.execute_script("arguments[0].click();", buy_button)
-    
-    # #나중에 카드 결제
-    # buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[3]/div/ul/li[2]')))
-    # driver.execute_script("arguments[0].click();", buy_button)
-    
-    #주문결제
-    buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="orderForm"]/div/div[7]/button')))
-    driver.execute_script("arguments[0].click();", buy_button)
-        
+  #일반결제
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="chargePointScrollArea"]/div[1]/ul[1]/li[4]/div[1]/span[1]/span')))
+  driver.execute_script("arguments[0].click();", buy_button)
+
+  #나중에결제
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="chargePointScrollArea"]/div[1]/ul[1]/li[4]/ul/li[4]/span[1]/span')))
+  driver.execute_script("arguments[0].click();", buy_button)
+
+  # #나중에 카드 결제
+  #buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[3]/div/ul/li[2]')))
+  driver.execute_script("// select 요소를 선택합니다\
+  const selectElement = document.querySelector('#skipPaymentMethodSelectBox select');\
+  // '나중에 카드 결제' 옵션을 찾습니다.\
+  const optionToSelect = Array.from(selectElement.options).find(option => option.textContent.trim() === '나중에 카드 결제');\
+  if (optionToSelect) {\
+    // 해당 옵션을 선택합니다.\
+  optionToSelect.selected = true;\
+  // 선택한 옵션을 변경한 후 이벤트를 트리거하여 변경 사항을 처리합니다.\
+  selectElement.dispatchEvent(new Event('change', { bubbles: true }));\
+  }")
+
+  #주문결제
+  buy_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, '//*[@id="orderForm"]/div/div[7]/button')))
+  driver.execute_script("arguments[0].click();", buy_button)
+
   if(driver.current_url in "https://order.pay.naver.com/orderSheet/result/2023080830498831/integrationCart"):
     print("// 주문 완료")
   else:
     print("// 주문 실패")
-  
-input_date_string = "2023-08-10"  # Replace this with the date you want to check
-result = is_within_last_week(input_date_string)
-if(result):
-  start()
+
+
+start()
